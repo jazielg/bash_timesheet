@@ -1,0 +1,32 @@
+#!/bin/bash
+TIME=$(date +"%H:%M")
+DATE=$(date +%Y-%m-%d)
+FILE="/home/$USER/timesheet/timesheet_${DATE}.txt"
+if [[ ! -e ${FILE} ]]; then
+	mkdir -p "/home/$USER/timesheet"
+    touch ${FILE}
+fi
+if [[ $1 == 'pause' ]]; then
+	echo -e "<============ ${TIME} $2" >> ${FILE}
+	exit 0 
+fi
+if [[ $1 == 'continue' ]]; then
+	echo -e "============> ${TIME} $2" >> ${FILE}
+	exit 0
+fi
+if [[ $1 == 'status' ]]; then
+	tail -n${2-10} ${FILE}
+	exit 0
+fi
+if [[ $1 == 'reset' ]]; then
+	OLD_FILE=/home/$USER/timesheet/old.txt
+	cp ${FILE} ${OLD_FILE}
+	head -n -1 ${OLD_FILE} > ${FILE}
+	rm ${OLD_FILE}
+	exit 0
+fi
+echo -e "${TIME} - Status: $1 \t Description: $2" >> ${FILE}
+if [[ $1 == 'end' ]]; then
+	echo -e "============" >> ${FILE} 
+fi
+exit 0
